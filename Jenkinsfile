@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = "tanu12docker/my-project:latest"  
-        DOCKER_CREDENTIALS = 'docker-hub-credentials'  
+        DOCKER_CREDENTIALS = 'DOCKER_CREDENTIALS_ID'  
         GITHUB_CREDENTIALS = 'github-ssh-key'   //changes in file
     }
 

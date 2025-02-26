@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appname }}  
+  labels:
+    app: {{ .Values.appname }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appname }}
+  template:
+    metadata:
+      name: {{ .Values.appname }}  
+      labels:
+        app: {{ .Values.appname }}  
+    spec:
+      serviceAccountName: {{ include "helm-project.serviceAccountName" . }}
+      containers:
+        - name: mycontainer
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+      {{- with .Values.podSecurityContext }}
+      securityContext: 
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

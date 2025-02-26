@@ -1,0 +1,40 @@
+replicaCount: 1
+appname: nginx-app
+
+image:
+  repository: tanu12docker/my-project
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  port: 80
+  type: NodePort
+
+ingress:
+  enabled: true
+  className: alb
+  hostname: tanushree.online
+  port: 80
+  annotations:
+    alb.ingress.kubernetes.io/target-node-labels: "kubernetes.io/os=linux"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/group.name: "hello-world-group"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:390402563413:certificate/fea78caa-34c2-4b9e-8763-7c01fb4bb341"
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-2016-08
+    alb.ingress.kubernetes.io/redirect-http-to-https: "true"
+  tls:
+    enabled: true
+    certificateArn: arn:aws:acm:us-east-1:390402563413:certificate/fea78caa-34c2-4b9e-8763-7c01fb4bb341
+    secretName: tls-secret
+
+serviceAccount:
+  create: true
+  name: aws-load-balancer-controller
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::390402563413:role/eks-role-ALB-ingresscontroller
+  automount: true
+
+autoscaling:
+  enabled: false
