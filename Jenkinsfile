@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "tanu12docker/my-project:latest"  
         DOCKER_CREDENTIALS = 'docker-hub-credentials'  
-        GITHUB_CREDENTIALS = 'github-ssh-key'  
+        GITHUB_CREDENTIALS = 'github-ssh-key'   //changes
     }
 
     stages {
