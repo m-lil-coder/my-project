@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         // Docker credentials and image details
-        DOCKER_IMAGE = 'tanu12docker/hellotanushree'  // Docker Hub image name
-        DOCKER_TAG = '1.0.0'  // Docker image tag
+        DOCKER_IMAGE = 'tanu12docker/hellotanushree' //
+        DOCKER_TAG = '1.0.0'  
         DOCKER_CREDENTIALS_ID = 'docker-hub-creds'  // Jenkins credential ID for Docker Hub
         K8S_CONTEXT = 'k8s-cluster-context'  // Kubernetes context
         HELM_RELEASE_NAME = 'hellotanushree'  // Helm release name
@@ -14,16 +14,7 @@ pipeline {
         GITHUB_CREDENTIALS = 'GITHUB_CREDENTIAL'
     }
 
-//     stage('Checkout Source Code') {
-//     steps {
-//         script {
-//             sshagent([env.GITHUB_CREDENTIALS]) {
-//                  sh 'git clone git@github.com:m-lil-coder/my-project.git'
-//             }
-//         }
-//     }
-// }
-
+//changed
 stage('Checkout Source Code') {
     steps {
         script {
