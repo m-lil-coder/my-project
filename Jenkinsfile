@@ -1,28 +1,28 @@
 pipeline {
     agent any
-    
+
     environment {
-        DOCKER_IMAGE = "tanu12docker/my-project:latest"  
-        DOCKER_CREDENTIALS = 'DOCKER_CREDENTIALS_ID'  
-        GITHUB_TOKEN = credentials('git-new-PAT1')  // Define PAT credentials ID here
+        DOCKER_IMAGE = "tanu12docker/my-project:latest"
+        DOCKER_CREDENTIALS = 'DOCKER_CREDENTIALS_ID'
+        GITHUB_CREDENTIALS = 'git-new-PAT1' // Correct credential ID here
     }
 
     stages {
         stage('Checkout Source Code') {
             steps {
                 script {
-                    // Use the GitHub repository URL with the Personal Access Token
-                    def gitUrl = "https://$GITHUB_TOKEN@github.com/m-lil-coder/my-project.git"
-                    git url: gitUrl, branch: 'main'  // Adjust branch if needed
+                    // Use credentials binding to securely access the token
+                    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: env.GITHUB_CREDENTIALS, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN']]) {
+                        def gitUrl = "https://${GIT_TOKEN}@github.com/m-lil-coder/my-project.git"
+                        git url: gitUrl, branch: 'main'
+                    }
                 }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh 'docker build -t $DOCKER_IMAGE .'
-                }
+                sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
 
@@ -38,15 +38,13 @@ pipeline {
 
         stage('Push Docker Image to Docker Hub') {
             steps {
-                script {
-                    sh 'docker push $DOCKER_IMAGE'
-                }
+                sh 'docker push $DOCKER_IMAGE'
             }
         }
     }
 
     post {
-        always { 
+        always {
             sh 'docker rmi $DOCKER_IMAGE'
         }
     }
