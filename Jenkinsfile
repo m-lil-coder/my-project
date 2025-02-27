@@ -4,7 +4,11 @@ pipeline {
     environment {
         DOCKER_IMAGE = "tanu12docker/my-project:latest"
         DOCKER_CREDENTIALS = 'DOCKER_CREDENTIALS_ID'
-        GITHUB_CREDENTIALS = 'git-new-PAT1'
+        GITHUB_CREDENTIALS = 'github-ssh-key'
+        HELM_RELEASE_NAME = 'my-project-release'
+        HELM_NAMESPACE = 'kube-system'
+        HELM_CHART_DIR = 'helm-project' // Directory of helm chart within the repo.
+        KUBE_CONFIG_CREDENTIALS = 'kube-credentials' // credential id for kubeconfig file.
     }
 
     stages {
@@ -44,6 +48,21 @@ pipeline {
         stage('Push Docker Image to Docker Hub') {
             steps {
                 sh 'docker push $DOCKER_IMAGE'
+            }
+        }
+    stage('Deploy to Kubernetes with Helm') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: env.KUBE_CONFIG_CREDENTIALS, variable: 'KUBE_CONFIG_CONTENT')]) {
+                        writeFile file: 'kubeconfig', text: "${KUBE_CONFIG_CONTENT}"
+                        sh 'export KUBECONFIG=$PWD/kubeconfig'
+                        sh """
+                        helm upgrade --install ${HELM_RELEASE_NAME} ${HELM_CHART_DIR} \
+                        --namespace ${HELM_NAMESPACE} \
+                        --set image.repository=${DOCKER_IMAGE.split(':')[0]},image.tag=${DOCKER_IMAGE.split(':')[1]}
+                        """
+                    }
+                }
             }
         }
     }
