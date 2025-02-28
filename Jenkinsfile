@@ -65,7 +65,7 @@ pipeline {
 
                         // Set the KUBECONFIG environment variable to the kubeconfig file location
                         sh 'export KUBECONFIG=$PWD/kubeconfig'
-                        
+                        sh "aws eks update-kubeconfig --name my-cluster"
                         // Deploy to Kubernetes using Helm
                         sh """
                         helm upgrade --install ${HELM_RELEASE_NAME} ${HELM_CHART_DIR} \
