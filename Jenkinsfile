@@ -100,7 +100,7 @@ pipeline {
                             # Apply the updated ingress values from the GitHub repo (assuming the values.yaml is part of the repo)
                             helm upgrade --install my-ingress-release ${HELM_CHART_DIR} \
                             --namespace ${HELM_NAMESPACE} \
-                            -f values.yaml \
+                            -f ${HELM_CHART_DIR}/values.yaml \
                             -f ${HELM_CHART_DIR}/ingress.yaml  # Assuming your ingress.yaml file is in the repo directory
                         """
                     }
