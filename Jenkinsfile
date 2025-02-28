@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -52,16 +53,6 @@ pipeline {
             }
         }
 
-        stage('Add Helm Repositories') {
-            steps {
-                script {
-                    // Add the AWS EKS Helm chart repository and update the local repo cache
-                    sh 'helm repo add eks https://aws.github.io/eks-charts'
-                    sh 'helm repo update'
-                }
-            }
-        }
-
         stage('Deploy to Kubernetes with Helm') {
             steps {
                 script {
@@ -81,28 +72,9 @@ pipeline {
 
                         // Deploy to Kubernetes using Helm
                         sh """
-                            helm upgrade --install ${HELM_RELEASE_NAME} ${HELM_CHART_DIR} \
-                            --namespace ${HELM_NAMESPACE} \
-                            --set image.repository=${DOCKER_IMAGE.split(':')[0]},image.tag=${DOCKER_IMAGE.split(':')[1]}
-
-                            # Deploy AWS Load Balancer Controller
-                            helm upgrade --install my-project-release eks/aws-load-balancer-controller \
-                            --namespace kube-system \
-                            --set clusterName=my-cluster \
-                            --set region=us-east-1 \
-                            --set serviceAccount.create=false \
-                            --set serviceAccount.name=aws-load-balancer-controller \
-                            --set ingress.enabled=true \
-                            --set ingress.hostname=tanushree.online \
-                            --set ingress.port=80 \
-                            --values ${HELM_CHART_DIR}/values.yaml
-
-                            # Apply the updated ingress values from the GitHub repo (assuming the values.yaml is part of the repo)
-                            helm upgrade --install my-ingress-release ${HELM_CHART_DIR} \
-                            --namespace ${HELM_NAMESPACE} \
-                            -f ${HELM_CHART_DIR}/values.yaml \
-                            -f ${HELM_CHART_DIR}/templates/ingress.yaml      
-                            # Assuming your ingress.yaml file is in the repo directory
+                        helm upgrade --install ${HELM_RELEASE_NAME} ${HELM_CHART_DIR} \
+                        --namespace ${HELM_NAMESPACE} \
+                        --set image.repository=${DOCKER_IMAGE.split(':')[0]},image.tag=${DOCKER_IMAGE.split(':')[1]}
                         """
                     }
                 }
