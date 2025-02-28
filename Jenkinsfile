@@ -95,7 +95,7 @@ pipeline {
                             --set ingress.enabled=true \
                             --set ingress.hostname=tanushree.online \
                             --set ingress.port=80 \
-                            --values ./path_to_your_values_file/values.yaml
+                            --values .helm-project/values.yaml
 
                             # Apply the updated ingress values from the GitHub repo (assuming the values.yaml is part of the repo)
                             helm upgrade --install my-ingress-release ${HELM_CHART_DIR} \
