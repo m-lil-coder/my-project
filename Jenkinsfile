@@ -7,11 +7,9 @@ pipeline {
         GITHUB_CREDENTIALS = 'git-new-PAT1'
         HELM_RELEASE_NAME = 'my-project-release'
         HELM_NAMESPACE = 'kube-system'
-        HELM_CHART_DIR = 'helm-project'  // Directory of helm chart within the repo.
-        KUBE_CONFIG_CREDENTIALS = 'kube-credentials'  // credential id for kubeconfig file.
-        KUBECONFIG = '/var/lib/jenkins/.kube/config'  // Set KUBECONFIG environment variable globally
-    }
-
+        HELM_CHART_DIR = 'helm-project'  
+        KUBE_CONFIG_CREDENTIALS = 'kube-credentials'  
+        KUBECONFIG = '/var/lib/jenkins/.kube/config'  
     stages {
         stage('Checkout Source Code') {
             steps {
@@ -60,8 +58,8 @@ pipeline {
                 script {
                     // Retrieve the kubeconfig from Jenkins credentials securely
                     withCredentials([string(credentialsId: env.KUBE_CONFIG_CREDENTIALS, variable: 'KUBE_CONFIG_CONTENT'),
-                                     string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),  // AWS credentials
-                                     string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {  // AWS credentials
+                                     string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),  
+                                     string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {  
                         // Write the kubeconfig content securely to a file
                         writeFile file: 'kubeconfig', text: KUBE_CONFIG_CONTENT
 
@@ -72,8 +70,8 @@ pipeline {
                         sh """
                         export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                        aws configure set region us-east-1  // Replace with your desired region
-                        aws eks update-kubeconfig --name my-cluster  // Replace with your actual cluster name
+                        aws configure set region us-east-1  
+                        aws eks update-kubeconfig --name my-cluster  
                         """
 
                         // Deploy to Kubernetes using Helm
