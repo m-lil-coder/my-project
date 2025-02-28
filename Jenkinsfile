@@ -59,13 +59,23 @@ pipeline {
             steps {
                 script {
                     // Retrieve the kubeconfig from Jenkins credentials securely
-                    withCredentials([string(credentialsId: env.KUBE_CONFIG_CREDENTIALS, variable: 'KUBE_CONFIG_CONTENT')]) {
+                    withCredentials([string(credentialsId: env.KUBE_CONFIG_CREDENTIALS, variable: 'KUBE_CONFIG_CONTENT'),
+                                     string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),  // AWS credentials
+                                     string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {  // AWS credentials
                         // Write the kubeconfig content securely to a file
                         writeFile file: 'kubeconfig', text: KUBE_CONFIG_CONTENT
 
                         // Set the KUBECONFIG environment variable to the kubeconfig file location
                         sh 'export KUBECONFIG=$PWD/kubeconfig'
-                        sh "aws eks update-kubeconfig --name my-cluster"
+
+                        // Set AWS credentials for authentication
+                        sh """
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        aws configure set region us-east-1  // Replace with your desired region
+                        aws eks update-kubeconfig --name my-cluster  // Replace with your actual cluster name
+                        """
+
                         // Deploy to Kubernetes using Helm
                         sh """
                         helm upgrade --install ${HELM_RELEASE_NAME} ${HELM_CHART_DIR} \
