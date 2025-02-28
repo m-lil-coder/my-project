@@ -75,25 +75,17 @@ sh """
     --namespace ${HELM_NAMESPACE} \
     --set image.repository=${DOCKER_IMAGE.split(':')[0]},image.tag=${DOCKER_IMAGE.split(':')[1]}
 
-    # Install AWS Load Balancer Controller
     helm upgrade --install my-project-release eks/aws-load-balancer-controller \
-    --namespace kube-system \
-    --set clusterName=my-cluster \
-    --set region=us-east-1 \
-    --set serviceAccount.create=false \
-    --set serviceAccount.name=aws-load-balancer-controller \
-    --set ingress.enabled=true \
-    --set ingress.hostname=tanushree.online \
-    --set ingress.port=80 \
-    --set ingress.className=alb \
-    --set ingress.annotations.alb.ingress.kubernetes.io/target-node-labels="kubernetes.io/os=linux" \
-    --set ingress.annotations.alb.ingress.kubernetes.io/scheme="internet-facing" \
-    --set ingress.annotations.alb.ingress.kubernetes.io/target-type="ip" \
-    --set ingress.annotations.alb.ingress.kubernetes.io/listen-ports='[{"HTTP": 80}, {"HTTPS": 443}]' \
-    --set ingress.annotations.alb.ingress.kubernetes.io/group.name="hello-world-group" \
-    --set ingress.annotations.alb.ingress.kubernetes.io/certificate-arn="${ALB_CERTIFICATE_ARN}" \
-    --set ingress.annotations.alb.ingress.kubernetes.io/ssl-policy=ELBSecurityPolicy-2016-08 \
-    --set ingress.annotations.alb.ingress.kubernetes.io/redirect-http-to-https="true"
+--namespace kube-system \
+--set clusterName=my-cluster \
+--set region=us-east-1 \
+--set serviceAccount.create=false \
+--set serviceAccount.name=aws-load-balancer-controller \
+--set ingress.enabled=true \
+--set ingress.hostname=tanushree.online \
+--set ingress.port=80 \
+--values ./path_to_your_values_file/values.yaml
+
 
     # Apply the updated ingress values from the GitHub repo (assuming the values.yaml is part of the repo)
     helm upgrade --install my-ingress-release ${HELM_CHART_DIR} \
