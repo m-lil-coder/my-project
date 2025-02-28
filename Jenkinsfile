@@ -7,16 +7,20 @@ pipeline {
         GITHUB_CREDENTIALS = 'git-new-PAT1'
         HELM_RELEASE_NAME = 'my-project-release'
         HELM_NAMESPACE = 'kube-system'
-        HELM_CHART_DIR = 'helm-project' // Directory of helm chart within the repo.
-        KUBE_CONFIG_CREDENTIALS = 'kube-credentials' // credential id for kubeconfig file.
+        HELM_CHART_DIR = 'helm-project'  // Directory of helm chart within the repo.
+        KUBE_CONFIG_CREDENTIALS = 'kube-credentials'  // credential id for kubeconfig file.
+        KUBECONFIG = '/var/lib/jenkins/.kube/config'  // Set KUBECONFIG environment variable globally
     }
 
     stages {
         stage('Checkout Source Code') {
             steps {
                 script {
+                    // Use withCredentials to inject secrets securely into environment variables
                     withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: env.GITHUB_CREDENTIALS, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN']]) {
-                        def gitUrl = "https://${GIT_TOKEN}@github.com/m-lil-coder/my-project.git"
+                        // Instead of using Groovy string interpolation, use environment variables securely
+                        def gitUrl = "https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/m-lil-coder/my-project.git"
+                        // Perform Git Checkout using the secure credentials
                         git url: gitUrl, branch: 'main'
                     }
                 }
@@ -50,12 +54,19 @@ pipeline {
                 sh 'docker push $DOCKER_IMAGE'
             }
         }
-    stage('Deploy to Kubernetes with Helm') {
+
+        stage('Deploy to Kubernetes with Helm') {
             steps {
                 script {
+                    // Retrieve the kubeconfig from Jenkins credentials securely
                     withCredentials([string(credentialsId: env.KUBE_CONFIG_CREDENTIALS, variable: 'KUBE_CONFIG_CONTENT')]) {
-                        writeFile file: 'kubeconfig', text: "${KUBE_CONFIG_CONTENT}"
+                        // Write the kubeconfig content securely to a file
+                        writeFile file: 'kubeconfig', text: KUBE_CONFIG_CONTENT
+
+                        // Set the KUBECONFIG environment variable to the kubeconfig file location
                         sh 'export KUBECONFIG=$PWD/kubeconfig'
+                        
+                        // Deploy to Kubernetes using Helm
                         sh """
                         helm upgrade --install ${HELM_RELEASE_NAME} ${HELM_CHART_DIR} \
                         --namespace ${HELM_NAMESPACE} \
@@ -69,6 +80,7 @@ pipeline {
 
     post {
         always {
+            // Cleanup: remove the Docker image after the build is finished
             sh 'docker rmi $DOCKER_IMAGE'
         }
     }
