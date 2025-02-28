@@ -101,7 +101,8 @@ pipeline {
                             helm upgrade --install my-ingress-release ${HELM_CHART_DIR} \
                             --namespace ${HELM_NAMESPACE} \
                             -f ${HELM_CHART_DIR}/values.yaml \
-                            -f ${HELM_CHART_DIR}/ingress.yaml  # Assuming your ingress.yaml file is in the repo directory
+                            -f ${HELM_CHART_DIR}/templates/ingress.yaml      
+                            # Assuming your ingress.yaml file is in the repo directory
                         """
                     }
                 }
