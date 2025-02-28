@@ -10,15 +10,14 @@ pipeline {
         HELM_CHART_DIR = 'helm-project'  
         KUBE_CONFIG_CREDENTIALS = 'kube-credentials'  
         KUBECONFIG = '/var/lib/jenkins/.kube/config'  
+    }
+
     stages {
         stage('Checkout Source Code') {
             steps {
                 script {
-                    // Use withCredentials to inject secrets securely into environment variables
                     withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: env.GITHUB_CREDENTIALS, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN']]) {
-                        // Instead of using Groovy string interpolation, use environment variables securely
                         def gitUrl = "https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/m-lil-coder/my-project.git"
-                        // Perform Git Checkout using the secure credentials
                         git url: gitUrl, branch: 'main'
                     }
                 }
@@ -56,14 +55,10 @@ pipeline {
         stage('Deploy to Kubernetes with Helm') {
             steps {
                 script {
-                    // Retrieve the kubeconfig from Jenkins credentials securely
                     withCredentials([string(credentialsId: env.KUBE_CONFIG_CREDENTIALS, variable: 'KUBE_CONFIG_CONTENT'),
                                      string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),  
                                      string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {  
-                        // Write the kubeconfig content securely to a file
                         writeFile file: 'kubeconfig', text: KUBE_CONFIG_CONTENT
-
-                        // Set the KUBECONFIG environment variable to the kubeconfig file location
                         sh 'export KUBECONFIG=$PWD/kubeconfig'
 
                         // Set AWS credentials for authentication
@@ -88,7 +83,6 @@ pipeline {
 
     post {
         always {
-            // Cleanup: remove the Docker image after the build is finished
             sh 'docker rmi $DOCKER_IMAGE'
         }
     }
