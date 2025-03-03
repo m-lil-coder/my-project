@@ -74,7 +74,6 @@ pipeline {
                         sh """
                            helm upgrade -i -f values.yaml       
                            --set image.tag="latest"      
-                           --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=arn:aws:acm:us-east-1:390402563413:certificate/fea78caa-34c2-4b9e-8763-7c01fb4bb341     
                            --set ingress.host.name=tanushree.online      
                            -n uat --create-namespace helm-project .
                           // helm upgrade --install ${HELM_RELEASE_NAME} ${HELM_CHART_DIR} \
