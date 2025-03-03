@@ -59,6 +59,7 @@ pipeline {
                     withCredentials([string(credentialsId: env.KUBE_CONFIG_CREDENTIALS, variable: 'KUBE_CONFIG_CONTENT')]) {
                         writeFile file: 'kubeconfig', text: "${KUBE_CONFIG_CONTENT}"
                         sh 'export KUBECONFIG=$PWD/kubeconfig'
+                        sh 'cd helm-project'
                         sh """
                           helm upgrade --install ${HELM_RELEASE_NAME} ${HELM_CHART_DIR} \
                           --namespace ${HELM_NAMESPACE} \
