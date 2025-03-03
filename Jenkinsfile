@@ -5,7 +5,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "tanu12docker/my-project:latest"
         DOCKER_CREDENTIALS = 'DOCKER_CREDENTIALS_ID'
-        GITHUB_CREDENTIALS = 'git-new-PAT'
+        GITHUB_CREDENTIALS = 'git-new-PAT2'
         HELM_RELEASE_NAME = 'my-project-release'
         HELM_NAMESPACE = 'kube-system'
         HELM_CHART_DIR = 'helm-project'  
