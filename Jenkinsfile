@@ -56,27 +56,25 @@ pipeline {
             steps {
                 script {
                     // Set AWS credentials for authentication
+                    withCredentials([string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
+                                      string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        sh """
+                            export AWS_ACCESS_KEY_ID=\$AWS_ACCESS_KEY_ID
+                            export AWS_SECRET_ACCESS_KEY=\$AWS_SECRET_ACCESS_KEY
+                            aws configure set aws_access_key_id \$AWS_ACCESS_KEY_ID
+                            aws configure set aws_secret_access_key \$AWS_SECRET_ACCESS_KEY
+                            aws configure set region us-east-1  
+                            aws eks update-kubeconfig --name my-cluster  
+                        """
+                    }
+
+                    // Helm deployment
                     sh """
-                        export AWS_ACCESS_KEY_ID=${aws-access-key-id}
-                        export AWS_SECRET_ACCESS_KEY=${aws-secret-access-key}
-                        aws configure set aws_access_key_id \$AWS_ACCESS_KEY_ID
-                        aws configure set aws_secret_access_key \$AWS_SECRET_ACCESS_KEY
-                        aws configure set region us-east-1  
-                        aws eks update-kubeconfig --name my-cluster  
-                    """
-                    
-                    // Use kubeconfig for helm deployment
-                    // withCredentials([string(credentialsId: env.KUBE_CONFIG_CREDENTIALS, variable: 'KUBE_CONFIG_CONTENT')]) {
-                    //     writeFile file: 'kubeconfig', text: "${KUBE_CONFIG_CONTENT}"
-                    //     sh 'export KUBECONFIG=$PWD/kubeconfig'
-                    // }
-                    
-                    sh 'cd helm-project'
-                    sh """
-                        helm upgrade -i -f values.yaml \
+                        cd ${HELM_CHART_DIR}
+                        helm upgrade -i ${HELM_RELEASE_NAME} . \
                         --set image.tag="latest" \
                         --set ingress.host.name=tanushree.online \
-                        -n uat --create-namespace helm-project .
+                        -n ${HELM_NAMESPACE} --create-namespace
                     """
                 }
             }
@@ -89,4 +87,3 @@ pipeline {
         }
     }
 }
-
