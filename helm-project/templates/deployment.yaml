@@ -24,18 +24,18 @@ spec:
             - name: http
               containerPort: 5000      # Change containerPort to 5000
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 5000               # Update the liveness probe to use port 5000
-            initialDelaySeconds: 3
-            periodSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 5000               # Update the readiness probe to use port 5000
-            initialDelaySeconds: 3
-            periodSeconds: 5
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 5000               # Update the liveness probe to use port 5000
+          #   initialDelaySeconds: 3
+          #   periodSeconds: 5
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 5000               # Update the readiness probe to use port 5000
+          #   initialDelaySeconds: 3
+          #   periodSeconds: 5
       {{- with .Values.podSecurityContext }}
       securityContext: 
         {{- toYaml . | nindent 8 }}
