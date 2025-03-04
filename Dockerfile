@@ -13,8 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code into the container
 COPY . /app/
 
-# Expose port 81 (which you want to use)
-EXPOSE 81
+# Expose port 5000 (the port your app runs on)
+EXPOSE 5000
 
 # Set the default command to run the app
 CMD ["python", "app.py"]
