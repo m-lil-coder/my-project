@@ -36,7 +36,15 @@ spec:
           #     port: 5000               # Update the readiness probe to use port 5000
           #   initialDelaySeconds: 3
           #   periodSeconds: 5
+          resources:
+          requests:
+            memory: "64Mi"   # Minimum resources requested by the pod
+            cpu: "250m"      # Minimum CPU requested by the pod
+          limits:
+            memory: "128Mi"  # Maximum resources allowed for the pod
+            cpu: "500m"      # Maximum CPU allowed for the pod
       {{- with .Values.podSecurityContext }}
       securityContext: 
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      
