@@ -24,6 +24,8 @@ ingress:
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:390402563413:certificate/fea78caa-34c2-4b9e-8763-7c01fb4bb341"
     alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-2016-08
     alb.ingress.kubernetes.io/redirect-http-to-https: "true"
+    alb.ingress.kubernetes.io/healthcheck-path: "/health"  # Path to the health check endpoint
+    alb.ingress.kubernetes.io/healthcheck-port: "5000"  # Port where your app is running (inside the container)
   tls:
     enabled: true
     certificateArn: arn:aws:acm:us-east-1:390402563413:certificate/fea78caa-34c2-4b9e-8763-7c01fb4bb341
