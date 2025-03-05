@@ -1,16 +1,18 @@
-# Use the official Nginx image from the Docker Hub
-FROM nginx:latest
+# Use the official Python image from Docker Hub
+FROM python:3.10-alpine
 
-# Set the working directory inside the container (optional)
-WORKDIR /usr/share/nginx/html
+# Set the working directory inside the container
+WORKDIR /app
 
-# Copy the custom HTML file into the Nginx container
-COPY index.html /usr/share/nginx/html/index.html
+# Copy requirements.txt and app.py first
+COPY requirements.txt /app/
+COPY app.py /app/
 
-# Copy the custom nginx.conf file into the container
-COPY nginx.conf /etc/nginx/nginx.conf
+# Install the required Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose port 80 for the container
+# Expose port 5000 (which your app uses)
 EXPOSE 80
 
-# No need to specify CMD or ENTRYPOINT as the Nginx base image already has a default one
+# Set the default command to run the app
+CMD ["python", "app.py"]
