@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "tanu12docker/my-project:latest"
+        DOCKER_IMAGE = "tanu12docker/test-repo12:latest"
         DOCKER_CREDENTIALS = 'DOCKER_CREDENTIALS_ID'
         GITHUB_CREDENTIALS = 'jenkins-new'
         HELM_RELEASE_NAME = 'my-project-release'
