@@ -28,14 +28,14 @@ spec:
             httpGet:
               path: /   # Ensure the health check URL is correct
               port: 80      # The port your app is listening on
-            initialDelaySeconds: 5  # Delay before the probe starts
+            initialDelaySeconds: 15  # Delay before the probe starts
             periodSeconds: 10       # Frequency of the probe
             failureThreshold: 3     # How many failures before the pod is considered unhealthy
           readinessProbe:
             httpGet:
               path: /  # Ensure the readiness check URL is correct
               port: 80      # The port your app is listening on
-            initialDelaySeconds: 5  # Delay before the probe starts
+            initialDelaySeconds: 15  # Delay before the probe starts
             periodSeconds: 10       # Frequency of the probe
             failureThreshold: 3     # How many failures before the pod is considered not ready
           resources:
