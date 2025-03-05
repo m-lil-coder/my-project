@@ -8,7 +8,7 @@ image:
 
 service:
   port: 80
-  type: LoadBalancer
+  type: NodePort
 
 ingress:
   enabled: true
