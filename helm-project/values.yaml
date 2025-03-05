@@ -2,7 +2,7 @@ replicaCount: 1
 appname: nginx-app
 
 image:
-  repository: tanu12docker/my-project
+  repository: tanu12docker/test-repo12
   tag: latest
   pullPolicy: IfNotPresent
 
