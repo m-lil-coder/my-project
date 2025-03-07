@@ -55,14 +55,14 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /health  # Adjust to your backend health check endpoint
+              path: /  # Adjust to your backend health check endpoint
               port: 5000
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /health  # Adjust to your backend readiness check endpoint
+              path: /  # Adjust to your backend readiness check endpoint
               port: 5000
             initialDelaySeconds: 15
             periodSeconds: 10
