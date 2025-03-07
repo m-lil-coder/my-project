@@ -27,7 +27,7 @@ pipeline {
 
         stage('Check Workspace') {
             steps {
-                sh 'ls -la'  // This will show the files in the workspace
+                sh 'ls -la' // This will show the files in the workspace
             }
         }
 
@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     // Build frontend Docker image
-                    sh 'docker build -f frontend/Dockerfile -t $FRONTEND_DOCKER_IMAGE frontend/'
+                    sh 'docker build -f Frontend/Dockerfile -t $FRONTEND_DOCKER_IMAGE Frontend/'
 
                     // Build backend Docker image
                     sh 'docker build -f backend/Dockerfile -t $BACKEND_DOCKER_IMAGE backend/'
@@ -70,24 +70,24 @@ pipeline {
                 script {
                     // Set AWS credentials for authentication
                     withCredentials([string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
-                                      string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
+                                    string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
                         sh """
                             export AWS_ACCESS_KEY_ID=\$AWS_ACCESS_KEY_ID
                             export AWS_SECRET_ACCESS_KEY=\$AWS_SECRET_ACCESS_KEY
                             aws configure set aws_access_key_id \$AWS_ACCESS_KEY_ID
                             aws configure set aws_secret_access_key \$AWS_SECRET_ACCESS_KEY
-                            aws configure set region us-east-1  
-                            aws eks update-kubeconfig --name my-cluster  
+                            aws configure set region us-east-1
+                            aws eks update-kubeconfig --name my-cluster
                         """
                     }
 
                     // Helm deployment
                     sh """
                         cd ${HELM_CHART_DIR}
-                        helm upgrade -i ${HELM_RELEASE_NAME} . \
-                        --set image.frontendTag="latest" \
-                        --set image.backendTag="latest" \
-                        --set ingress.host.name=tanushree.online \
+                        helm upgrade -i ${HELM_RELEASE_NAME} . \\
+                        --set image.frontendTag="latest" \\
+                        --set image.backendTag="latest" \\
+                        --set ingress.host.name=tanushree.online \\
                         -n ${HELM_NAMESPACE} --create-namespace
                     """
                 }
