@@ -97,6 +97,7 @@ pipeline {
         stage('Deploy with Docker Compose') {
     steps {
         script {
+            sh 'pwd' 
             sh 'ls -la'
             sh 'docker-compose -f docker-compose.yaml up -d'
         }
