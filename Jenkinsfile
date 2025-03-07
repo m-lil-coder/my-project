@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "tanu12docker/testflask:latest"
+        FRONTEND_DOCKER_IMAGE = "tanu12docker/frontend:latest"
+        BACKEND_DOCKER_IMAGE = "tanu12docker/backend:latest"
         DOCKER_CREDENTIALS = 'DOCKER_CREDENTIALS_ID'
         GITHUB_CREDENTIALS = 'jenkins-new'
         HELM_RELEASE_NAME = 'my-project-release'
@@ -30,9 +31,15 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Docker Images') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE .'
+                script {
+                    // Build frontend Docker image
+                    sh 'docker build -f frontend/Dockerfile -t $FRONTEND_DOCKER_IMAGE frontend/'
+
+                    // Build backend Docker image
+                    sh 'docker build -f backend/Dockerfile -t $BACKEND_DOCKER_IMAGE backend/'
+                }
             }
         }
 
@@ -46,9 +53,15 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image to Docker Hub') {
+        stage('Push Docker Images to Docker Hub') {
             steps {
-                sh 'docker push $DOCKER_IMAGE'
+                script {
+                    // Push frontend image to Docker Hub
+                    sh 'docker push $FRONTEND_DOCKER_IMAGE'
+
+                    // Push backend image to Docker Hub
+                    sh 'docker push $BACKEND_DOCKER_IMAGE'
+                }
             }
         }
 
@@ -72,10 +85,20 @@ pipeline {
                     sh """
                         cd ${HELM_CHART_DIR}
                         helm upgrade -i ${HELM_RELEASE_NAME} . \
-                        --set image.tag="latest" \
+                        --set image.frontendTag="latest" \
+                        --set image.backendTag="latest" \
                         --set ingress.host.name=tanushree.online \
                         -n ${HELM_NAMESPACE} --create-namespace
                     """
+                }
+            }
+        }
+
+        stage('Deploy with Docker Compose') {
+            steps {
+                script {
+                    // If you have a docker-compose.yml file, deploy using Docker Compose for local testing
+                    sh 'docker-compose -f docker-compose.yml up -d'
                 }
             }
         }
@@ -83,7 +106,8 @@ pipeline {
 
     post {
         always {
-            sh 'docker rmi $DOCKER_IMAGE'
+            // Clean up images after build and push
+            sh 'docker rmi $FRONTEND_DOCKER_IMAGE $BACKEND_DOCKER_IMAGE'
         }
     }
 }
