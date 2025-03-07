@@ -1,8 +1,15 @@
 replicaCount: 1
 appname: nginx-app
 
-image:
-  repository: tanu12docker/testflask
+# Frontend image details
+frontendImage:
+  repository: tanu12docker/frontend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Backend image details
+backendImage:
+  repository: tanu12docker/backend
   tag: latest
   pullPolicy: IfNotPresent
 
