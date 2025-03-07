@@ -95,13 +95,13 @@ pipeline {
         }
 
         stage('Deploy with Docker Compose') {
-            steps {
-                script {
-                    // If you have a docker-compose.yaml file, deploy using Docker Compose for local testing
-                    sh 'docker-compose -f docker-compose.yaml up -d'
-                }
-            }
+    steps {
+        script {
+            sh 'ls -la'
+            sh 'docker-compose -f docker-compose.yaml up -d'
         }
+    }
+}
     }
 
     post {
