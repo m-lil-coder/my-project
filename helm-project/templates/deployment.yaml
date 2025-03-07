@@ -17,27 +17,56 @@ spec:
     spec:
       serviceAccountName: {{ include "helm-project.serviceAccountName" . }}
       containers:
-        - name: mycontainer
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: frontend
+          image: {{ .Values.frontendImage.repository }}:{{ .Values.frontendImage.tag }}
+          imagePullPolicy: {{ .Values.frontendImage.pullPolicy }}
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /   # Ensure the health check URL is correct
-              port: 80      # The port your app is listening on
-            initialDelaySeconds: 15  # Delay before the probe starts
-            periodSeconds: 10       # Frequency of the probe
-            failureThreshold: 3     # How many failures before the pod is considered unhealthy
+              path: /  # Ensure the health check URL is correct
+              port: 80  # The port your frontend is listening on
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /  # Ensure the readiness check URL is correct
-              port: 80      # The port your app is listening on
-            initialDelaySeconds: 15  # Delay before the probe starts
-            periodSeconds: 10       # Frequency of the probe
-            failureThreshold: 3     # How many failures before the pod is considered not ready
+              port: 80  # The port your frontend is listening on
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+
+        - name: backend
+          image: {{ .Values.backendImage.repository }}:{{ .Values.backendImage.tag }}
+          imagePullPolicy: {{ .Values.backendImage.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health  # Adjust to your backend health check endpoint
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health  # Adjust to your backend readiness check endpoint
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: "64Mi"
